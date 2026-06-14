@@ -7,7 +7,7 @@ import { useUI } from './ui-context';
 import { useStore } from './store-context';
 
 export function Header() {
-  const { name } = useStore();
+  const { name, logo, announcement } = useStore();
   const { count } = useCart();
   const { openCart } = useUI();
   const path = usePathname();
@@ -19,22 +19,30 @@ export function Header() {
   ];
 
   return (
-    <header className="site-header">
-      <div className="container site-header-inner">
-        <Link href="/products" className="icon-btn menu-toggle" aria-label="Menu"><I.menu /></Link>
-        <Link href="/" className="brand"><span className="brand-dot" />{name}</Link>
-        <nav className="nav">
-          {links.map(([href, label]) => (
-            <Link key={href} href={href} className={active(href) ? 'active' : ''}>{label}</Link>
-          ))}
-        </nav>
-        <div className="header-actions">
-          <Link href="/products" className="icon-btn" aria-label="Search"><I.search /></Link>
-          <button className="icon-btn" onClick={openCart} aria-label="Cart">
-            <I.cart />{count > 0 && <span className="dot">{count}</span>}
-          </button>
+    <>
+      {announcement?.enabled && announcement.text && (
+        <div className="announce-bar">{announcement.text}</div>
+      )}
+      <header className="site-header">
+        <div className="container site-header-inner">
+          <Link href="/products" className="icon-btn menu-toggle" aria-label="Menu"><I.menu /></Link>
+          <Link href="/" className="brand">
+            {logo ? <img src={logo} alt={name} className="brand-logo" /> : <span className="brand-dot" />}
+            {name}
+          </Link>
+          <nav className="nav">
+            {links.map(([href, label]) => (
+              <Link key={href} href={href} className={active(href) ? 'active' : ''}>{label}</Link>
+            ))}
+          </nav>
+          <div className="header-actions">
+            <Link href="/products" className="icon-btn" aria-label="Search"><I.search /></Link>
+            <button className="icon-btn" onClick={openCart} aria-label="Cart">
+              <I.cart />{count > 0 && <span className="dot">{count}</span>}
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

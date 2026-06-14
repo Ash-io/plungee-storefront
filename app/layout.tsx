@@ -27,16 +27,29 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const RADII: Record<string, Record<string, string>> = {
+  sharp: { '--r-sm': '3px', '--r-md': '4px', '--r-lg': '6px', '--r-xl': '8px', '--r-pill': '8px' },
+  round: { '--r-sm': '12px', '--r-md': '16px', '--r-lg': '24px', '--r-xl': '34px', '--r-pill': '999px' },
+  soft: {},
+};
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const slug = resolveSlug();
   const store = slug ? await api.store(slug) : null;
-  const accent = store?.accent || '#b08968';
+
+  const themeVars: Record<string, string> = {};
+  if (store) {
+    themeVars['--accent'] = store.accent;
+    themeVars['--accent-ink'] = store.accent_ink || '#ffffff';
+    if (store.font === 'sans') themeVars['--font-display'] = 'var(--font-hanken)';
+    Object.assign(themeVars, RADII[store.radius] || {});
+  }
 
   return (
-    <html lang="en" className={`${cormorant.variable} ${hanken.variable}`}>
-      <body style={{ ['--accent' as string]: accent }}>
+    <html lang="en" className={`${cormorant.variable} ${hanken.variable}`} data-theme={store?.theme || 'light'}>
+      <body style={themeVars as React.CSSProperties}>
         {store ? (
-          <StoreProvider value={{ slug: store.slug, currency: store.currency, name: store.name, accent }}>
+          <StoreProvider value={store}>
             <UIProvider>
               <CartProvider>
                 <Header />

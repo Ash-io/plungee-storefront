@@ -12,7 +12,26 @@ async function get(path: string, revalidate = 60) {
   }
 }
 
-export interface StoreMeta { slug: string; name: string; tagline: string; logo: string; accent: string; currency: string; }
+export interface StoreMeta {
+  slug: string;
+  name: string;
+  tagline: string;
+  logo: string;
+  accent: string;
+  accent_ink: string;
+  currency: string;
+  theme: 'light' | 'dark';
+  font: 'serif' | 'sans';
+  radius: 'sharp' | 'soft' | 'round';
+  hero: { style: 'full' | 'split' | 'minimal'; title: string; subtitle: string; cta_label: string; image: string };
+  announcement: { enabled: boolean; text: string };
+  sections: { trust: boolean; categories: boolean; featured: boolean; editorial: boolean; quote: boolean; newsletter: boolean };
+  trust: { label: string }[];
+  editorial: { title: string; body: string; image: string; cta_label: string };
+  quote: { text: string; author: string };
+  social: { instagram: string; tiktok: string; x: string };
+  footer: { about: string };
+}
 export interface ProductCard { id: number; slug: string; name: string; price: string; image: string | null; category: string | null; in_stock: boolean; }
 export interface ProductDetail extends ProductCard {
   description: string; short_description: string; regular_price: string; sale_price: string; sku: string;

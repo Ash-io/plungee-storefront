@@ -7,6 +7,8 @@ import { I } from '@/components/icons';
 
 export const revalidate = 60;
 
+const TRUST_ICONS = [<I.truck key="t" />, <I.refresh key="r" />, <I.shield key="s" />, <I.leaf key="l" />];
+
 export default async function HomePage() {
   const slug = resolveSlug();
   const [store, productsRes, categories] = await Promise.all([
@@ -16,37 +18,64 @@ export default async function HomePage() {
   ]);
   const products = productsRes?.data || [];
   const currency = store?.currency || 'NGN';
-  const heroArt = products.find((p) => p.image) || products[0];
+  const sections = store?.sections;
+  const hero = store?.hero;
+  const heroArt = hero?.image
+    ? { image: hero.image, name: store?.name || 'store', id: 0 }
+    : products.find((p) => p.image) || products[0];
+
+  const heroStyle = hero?.style || 'full';
+  const heroTitle = hero?.title || 'Carry something worth keeping.';
+  const heroSub = hero?.subtitle || 'A considered edit, curated and delivered.';
+  const heroCta = hero?.cta_label || 'Shop the collection';
+  const heroKicker = store?.tagline || 'New collection';
+  const heroMedia = heroArt
+    ? <Media src={heroArt.image} alt={heroArt.name} seed={heroArt.id} />
+    : <Ph seed={store?.name || 'store'} label={store?.name || 'S'} mono={false} style={{ position: 'absolute', inset: 0 }} />;
+  const heroCopy = (
+    <div className="hero-copy">
+      <p className="eyebrow hero-kicker">{heroKicker}</p>
+      <h1 className="display hero-h1">{heroTitle}</h1>
+      <p className="hero-sub">{heroSub}</p>
+      <div className="hero-cta">
+        <Link href="/products" className="btn btn-primary btn-lg">{heroCta} <I.arrow /></Link>
+      </div>
+    </div>
+  );
 
   return (
     <>
-      {/* Hero — full-bleed editorial */}
+      {/* Hero */}
       <div className="container">
-        <div className="hero hero-full">
-          {heroArt
-            ? <Media src={heroArt.image} alt={heroArt.name} seed={heroArt.id} />
-            : <Ph seed={store?.name || 'store'} label={store?.name || 'S'} mono={false} style={{ position: 'absolute', inset: 0 }} />}
-          <div className="hero-veil" />
-          <div className="hero-copy">
-            <p className="eyebrow hero-kicker">{store?.tagline || 'New collection'}</p>
-            <h1 className="display hero-h1">Carry something<br />worth keeping.</h1>
-            <p className="hero-sub">A considered edit, curated and delivered. Designed for the everyday and the occasion alike.</p>
-            <div className="hero-cta">
-              <Link href="/products" className="btn btn-primary btn-lg">Shop the collection <I.arrow /></Link>
-            </div>
+        {heroStyle === 'split' ? (
+          <div className="hero hero-split">
+            {heroCopy}
+            <div className="ph hero-art">{heroMedia}</div>
           </div>
-        </div>
+        ) : heroStyle === 'minimal' ? (
+          <div className="hero hero-min">
+            {heroCopy}
+          </div>
+        ) : (
+          <div className="hero hero-full">
+            {heroMedia}
+            <div className="hero-veil" />
+            {heroCopy}
+          </div>
+        )}
       </div>
 
       {/* Trust row */}
-      <div className="trust"><div className="container trust-inner">
-        {[[<I.truck key="t" />, 'Fast nationwide delivery'], [<I.refresh key="r" />, 'Easy returns'], [<I.shield key="s" />, 'Buyer protection'], [<I.leaf key="l" />, 'Carefully sourced']].map(([icon, label], i) => (
-          <div className="trust-item" key={i}>{icon}<span>{label as string}</span></div>
-        ))}
-      </div></div>
+      {sections?.trust && store?.trust && store.trust.length > 0 && (
+        <div className="trust"><div className="container trust-inner">
+          {store.trust.map((t, i) => (
+            <div className="trust-item" key={i}>{TRUST_ICONS[i % TRUST_ICONS.length]}<span>{t.label}</span></div>
+          ))}
+        </div></div>
+      )}
 
       {/* Categories */}
-      {categories && categories.length > 0 && (
+      {sections?.categories && categories && categories.length > 0 && (
         <section className="section container">
           <div className="section-head">
             <div>
@@ -67,7 +96,7 @@ export default async function HomePage() {
       )}
 
       {/* Featured */}
-      {products.length > 0 && (
+      {sections?.featured && products.length > 0 && (
         <section className="section container">
           <div className="section-head">
             <div>
@@ -82,15 +111,37 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* Editorial band */}
+      {sections?.editorial && store?.editorial && (store.editorial.title || store.editorial.body) && (
+        <section className="section container">
+          <div className="editorial">
+            <div className="editorial-media">
+              {store.editorial.image
+                ? <Media src={store.editorial.image} alt={store.editorial.title} seed={1} />
+                : <Ph seed={store.editorial.title || 'editorial'} label="" mono={false} style={{ position: 'absolute', inset: 0 }} />}
+            </div>
+            <div className="editorial-copy">
+              <h2 className="display">{store.editorial.title}</h2>
+              <p>{store.editorial.body}</p>
+              {store.editorial.cta_label && (
+                <Link href="/products" className="btn btn-ink">{store.editorial.cta_label} <I.arrow /></Link>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Quote */}
-      <section className="section">
-        <div className="container" style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <blockquote className="display" style={{ fontSize: 'clamp(26px,3.4vw,40px)', lineHeight: 1.28, color: 'var(--ink)' }}>
-            &ldquo;Exactly as pictured, beautifully packaged, and it arrived fast. I&rsquo;ll be back.&rdquo;
-          </blockquote>
-          <p style={{ color: 'var(--ink-faint)', marginTop: 20, fontSize: 14, letterSpacing: '.04em' }}>VERIFIED BUYER</p>
-        </div>
-      </section>
+      {sections?.quote && store?.quote && store.quote.text && (
+        <section className="section">
+          <div className="container" style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+            <blockquote className="display" style={{ fontSize: 'clamp(26px,3.4vw,40px)', lineHeight: 1.28, color: 'var(--ink)' }}>
+              &ldquo;{store.quote.text}&rdquo;
+            </blockquote>
+            <p style={{ color: 'var(--ink-faint)', marginTop: 20, fontSize: 14, letterSpacing: '.04em' }}>{(store.quote.author || 'VERIFIED BUYER').toUpperCase()}</p>
+          </div>
+        </section>
+      )}
     </>
   );
 }

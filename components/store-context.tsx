@@ -1,10 +1,14 @@
 'use client';
 import { createContext, useContext, type ReactNode } from 'react';
+import type { StoreMeta } from '@/lib/api';
 
-interface Store { slug: string; currency: string; name: string; accent: string; }
-const Ctx = createContext<Store>({ slug: '', currency: 'NGN', name: 'Store', accent: '#b08968' });
+const Ctx = createContext<StoreMeta | null>(null);
 
-export function StoreProvider({ value, children }: { value: Store; children: ReactNode }) {
+export function StoreProvider({ value, children }: { value: StoreMeta; children: ReactNode }) {
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
-export function useStore() { return useContext(Ctx); }
+export function useStore(): StoreMeta {
+  const s = useContext(Ctx);
+  if (!s) throw new Error('useStore must be used within StoreProvider');
+  return s;
+}
