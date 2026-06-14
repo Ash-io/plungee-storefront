@@ -2,51 +2,45 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { api, formatPrice } from '@/lib/api';
 import { resolveSlug } from '@/lib/store';
+import { I } from '@/components/icons';
 
 export const metadata: Metadata = { title: 'Order confirmation', robots: { index: false } };
 
 export default async function OrderPage({ params }: { params: { id: string } }) {
   const slug = resolveSlug();
   const order: any = await api.order(slug, params.id);
-
-  if (!order) {
-    return <div className="text-center py-20 text-ink-muted">Order not found.</div>;
-  }
-
+  if (!order) return <div className="container"><div className="empty-state">Order not found.</div></div>;
   const pay = order.payment || {};
+  const cur = order.currency || 'NGN';
+
   return (
-    <div className="max-w-xl mx-auto">
-      <div className="text-center py-6">
-        <div className="w-14 h-14 rounded-full bg-brand-light text-brand grid place-items-center mx-auto text-2xl">✓</div>
-        <h1 className="text-2xl font-bold text-ink mt-4">Order placed</h1>
-        <p className="text-ink-muted mt-1">Order reference {pay.reference || `#${order.id}`}</p>
-      </div>
+    <div className="container">
+      <div className="confirm">
+        <div className="confirm-check"><I.check width="40" height="40" /></div>
+        <h1 className="display">Order placed</h1>
+        <span className="order-id">Reference {pay.reference || `#${order.id}`}</span>
 
-      <div className="bg-surface border border-line rounded-2xl p-5">
-        <h2 className="font-semibold text-ink mb-3">Pay by bank transfer</h2>
-        <p className="text-sm text-ink-muted mb-4">{pay.instructions || 'Transfer the total to the account below. Your order is processed once payment is confirmed.'}</p>
-        <dl className="text-sm space-y-2">
-          <div className="flex justify-between"><dt className="text-ink-muted">Bank</dt><dd className="font-medium">{pay.bank}</dd></div>
-          <div className="flex justify-between"><dt className="text-ink-muted">Account name</dt><dd className="font-medium">{pay.account_name}</dd></div>
-          <div className="flex justify-between"><dt className="text-ink-muted">Account number</dt><dd className="font-mono font-semibold">{pay.account_number}</dd></div>
-          <div className="flex justify-between"><dt className="text-ink-muted">Reference</dt><dd className="font-medium">{pay.reference}</dd></div>
-          <div className="flex justify-between pt-2 border-t border-line text-base"><dt className="font-semibold">Total</dt><dd className="font-bold text-brand">{formatPrice(order.total, order.currency || 'NGN')}</dd></div>
-        </dl>
-      </div>
+        <div className="confirm-card">
+          <div className="co-step-title" style={{ fontSize: 20 }}>Pay by bank transfer</div>
+          <p style={{ color: 'var(--ink-soft)', marginBottom: 18, fontSize: 14.5 }}>
+            {pay.instructions || 'Transfer the total to the account below. Your order is processed once payment is confirmed.'}
+          </p>
+          <div className="summary-row"><span>Bank</span><span style={{ color: 'var(--ink)', fontWeight: 600 }}>{pay.bank}</span></div>
+          <div className="summary-row"><span>Account name</span><span style={{ color: 'var(--ink)', fontWeight: 600 }}>{pay.account_name}</span></div>
+          <div className="summary-row"><span>Account number</span><span className="serif-num" style={{ color: 'var(--ink)', fontWeight: 700 }}>{pay.account_number}</span></div>
+          <div className="summary-row total"><span>Total</span><span className="serif-num">{formatPrice(order.total, cur)}</span></div>
+        </div>
 
-      {Array.isArray(order.items) && order.items.length > 0 && (
-        <div className="mt-5 bg-surface border border-line rounded-2xl p-5">
-          <h3 className="font-semibold text-ink mb-2">Items</h3>
-          <div className="space-y-1.5 text-sm">
+        {Array.isArray(order.items) && order.items.length > 0 && (
+          <div className="confirm-card" style={{ marginTop: 18 }}>
+            <div className="co-step-title" style={{ fontSize: 18 }}>Items</div>
             {order.items.map((it: any, i: number) => (
-              <div key={i} className="flex justify-between"><span className="text-ink-body">{it.name} × {it.quantity}</span><span>{formatPrice((Number(it.price) || 0) * (it.quantity || 1), order.currency || 'NGN')}</span></div>
+              <div className="summary-row" key={i}><span>{it.name} × {it.quantity}</span><span className="serif-num">{formatPrice((Number(it.price) || 0) * (it.quantity || 1), cur)}</span></div>
             ))}
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="text-center mt-6">
-        <Link href="/products" className="text-brand font-medium">Continue shopping</Link>
+        <div style={{ marginTop: 30 }}><Link href="/products" className="btn btn-ink">Continue shopping</Link></div>
       </div>
     </div>
   );

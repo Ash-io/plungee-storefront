@@ -1,25 +1,55 @@
+'use client';
 import Link from 'next/link';
-import Image from 'next/image';
-import { type ProductCard as P, formatPrice } from '@/lib/api';
+import { useEffect, useReducer } from 'react';
+import { I } from './icons';
+import { Media } from './Ph';
+import { useCart } from './cart';
+import { toast } from './ui-context';
+import { formatPrice, type ProductCard as P } from '@/lib/api';
+
+// favourites (localStorage)
+const KEY = 'plungee_favs';
+const subs = new Set<() => void>();
+let favSet = new Set<number>();
+if (typeof window !== 'undefined') {
+  try { favSet = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch { /* ignore */ }
+}
+function toggleFav(id: number) {
+  favSet.has(id) ? favSet.delete(id) : favSet.add(id);
+  try { localStorage.setItem(KEY, JSON.stringify([...favSet])); } catch { /* ignore */ }
+  subs.forEach((f) => f());
+}
+function useFav(id: number): [boolean, () => void] {
+  const [, force] = useReducer((x: number) => x + 1, 0);
+  useEffect(() => { subs.add(force); return () => { subs.delete(force); }; }, []);
+  return [favSet.has(id), () => toggleFav(id)];
+}
 
 export function ProductCard({ p, currency }: { p: P; currency: string }) {
+  const [fav, flip] = useFav(p.id);
+  const { add } = useCart();
+  const href = `/products/${p.slug}`;
   return (
-    <Link href={`/products/${p.slug}`} className="group block bg-surface rounded-2xl border border-line overflow-hidden hover:shadow-md transition-shadow">
-      <div className="relative aspect-square bg-surface-alt">
-        {p.image ? (
-          <Image src={p.image} alt={p.name} fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover" />
-        ) : (
-          <div className="w-full h-full grid place-items-center text-ink-muted text-sm">No image</div>
-        )}
-        {!p.in_stock && (
-          <span className="absolute top-2 left-2 bg-ink/80 text-white text-[11px] px-2 py-0.5 rounded-full">Out of stock</span>
-        )}
-      </div>
-      <div className="p-3">
-        {p.category && <div className="text-[11px] uppercase tracking-wide text-ink-muted">{p.category}</div>}
-        <h3 className="text-sm font-medium text-ink line-clamp-2 mt-0.5">{p.name}</h3>
-        <div className="mt-1.5 font-semibold text-brand">{formatPrice(p.price, currency)}</div>
-      </div>
-    </Link>
+    <article className="pcard">
+      <Link href={href} className="pcard-media" style={{ display: 'block' }}>
+        <Media src={p.image} alt={p.name} seed={p.id} meta={{ cat: p.category || undefined, color: p.name }} />
+        {!p.in_stock && <div className="pcard-badges"><span className="badge badge-best">Sold out</span></div>}
+        <button className={'pcard-fav' + (fav ? ' on' : '')} aria-label="Save"
+          onClick={(e) => { e.preventDefault(); flip(); }}>
+          {fav ? <I.heartFill /> : <I.heart />}
+        </button>
+        <button className="pcard-add"
+          onClick={(e) => { e.preventDefault(); add({ id: p.id, slug: p.slug, name: p.name, price: Number(p.price) || 0, image: p.image }); toast('Added · ' + p.name); }}>
+          <I.plus width="15" height="15" /> Add to bag
+        </button>
+      </Link>
+      <Link href={href} className="pcard-body" style={{ display: 'flex' }}>
+        {p.category && <span className="pcard-cat">{p.category}</span>}
+        <h3 className="pcard-name">{p.name}</h3>
+        <div className="pcard-foot">
+          <span className="pcard-price">{formatPrice(p.price, currency)}</span>
+        </div>
+      </Link>
+    </article>
   );
 }

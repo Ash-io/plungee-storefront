@@ -1,10 +1,18 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { Cormorant_Garamond, Hanken_Grotesk } from 'next/font/google';
 import { api } from '@/lib/api';
 import { resolveSlug } from '@/lib/store';
 import { CartProvider } from '@/components/cart';
 import { StoreProvider } from '@/components/store-context';
+import { UIProvider } from '@/components/ui-context';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { CartDrawer } from '@/components/CartDrawer';
+import { ToastHost } from '@/components/Toast';
+
+const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600'], variable: '--font-cormorant' });
+const hanken = Hanken_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-hanken' });
 
 export async function generateMetadata(): Promise<Metadata> {
   const slug = resolveSlug();
@@ -22,28 +30,27 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const slug = resolveSlug();
   const store = slug ? await api.store(slug) : null;
-  const name = store?.name || 'Store';
+  const accent = store?.accent || '#b08968';
 
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={`${cormorant.variable} ${hanken.variable}`}>
+      <body style={{ ['--accent' as string]: accent }}>
         {store ? (
-          <StoreProvider slug={store.slug} currency={store.currency}>
-            <CartProvider>
-              <Header storeName={name} />
-              <main className="max-w-6xl mx-auto px-5 py-8 min-h-[70vh]">{children}</main>
-              <footer className="border-t border-line mt-16">
-                <div className="max-w-6xl mx-auto px-5 py-8 text-sm text-ink-muted flex flex-col sm:flex-row gap-2 justify-between">
-                  <span>© {new Date().getFullYear()} {name}</span>
-                  <span>Powered by Plungee</span>
-                </div>
-              </footer>
-            </CartProvider>
+          <StoreProvider value={{ slug: store.slug, currency: store.currency, name: store.name, accent }}>
+            <UIProvider>
+              <CartProvider>
+                <Header />
+                <main style={{ flex: 1 }}>{children}</main>
+                <Footer />
+                <CartDrawer />
+                <ToastHost />
+              </CartProvider>
+            </UIProvider>
           </StoreProvider>
         ) : (
-          <div className="max-w-md mx-auto px-5 py-24 text-center">
-            <h1 className="text-xl font-bold text-ink">Store not found</h1>
-            <p className="text-ink-muted mt-2">This storefront is not available.</p>
+          <div style={{ maxWidth: 440, margin: '16vh auto', textAlign: 'center', padding: '0 20px' }}>
+            <h1 className="display" style={{ fontSize: 32 }}>Store not found</h1>
+            <p style={{ color: 'var(--ink-soft)', marginTop: 10 }}>This storefront is not available.</p>
           </div>
         )}
       </body>

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { api } from '@/lib/api';
 import { resolveSlug } from '@/lib/store';
 import { ProductCard } from '@/components/ProductCard';
+import { I } from '@/components/icons';
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: 'Shop' };
@@ -29,10 +30,11 @@ export default async function CatalogPage({
     api.categories(slug),
   ]);
   const products = res?.data || [];
-  const meta = res?.meta || { pages: 1, current_page: 1 };
+  const meta = res?.meta || { pages: 1, total: products.length };
   const currency = store?.currency || 'NGN';
+  const title = category || (q ? `“${q}”` : 'All products');
 
-  const pageHref = (p: number) => {
+  const hrefFor = (p: number) => {
     const u = new URLSearchParams();
     if (q) u.set('q', q);
     if (category) u.set('category', category);
@@ -42,40 +44,45 @@ export default async function CatalogPage({
   };
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-ink">Shop</h1>
-        <form action="/products" className="w-full sm:w-72">
-          <input name="q" defaultValue={q} placeholder="Search products…"
-            className="w-full px-4 py-2.5 text-sm bg-surface border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/30" />
-        </form>
+    <div className="container">
+      <div className="listing-head">
+        <div className="crumbs">
+          <Link href="/">Home</Link><span>/</span>
+          {category ? <><Link href="/products">Shop</Link><span>/</span><span style={{ color: 'var(--ink)' }}>{category}</span></> : <span style={{ color: 'var(--ink)' }}>Shop</span>}
+        </div>
+        <h1 className="display">{title}</h1>
+        <p style={{ color: 'var(--ink-soft)', marginTop: 10, maxWidth: '52ch' }}>
+          The full collection, curated and ready to ship.
+        </p>
       </div>
 
-      {categories && categories.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          <Link href="/products" className={`px-3 py-1.5 rounded-full text-sm border ${!category ? 'bg-brand text-white border-brand' : 'bg-surface border-line text-ink-body'}`}>All</Link>
-          {categories.map((c) => (
-            <Link key={c} href={`/products?category=${encodeURIComponent(c)}`}
-              className={`px-3 py-1.5 rounded-full text-sm border ${category === c ? 'bg-brand text-white border-brand' : 'bg-surface border-line text-ink-body hover:border-brand'}`}>
-              {c}
-            </Link>
+      <div className="toolbar">
+        <div className="filter-row">
+          <Link href="/products" className={'chip' + (!category ? ' is-active' : '')}>All</Link>
+          {(categories || []).map((c) => (
+            <Link key={c} href={`/products?category=${encodeURIComponent(c)}`} className={'chip' + (category === c ? ' is-active' : '')}>{c}</Link>
           ))}
         </div>
-      )}
-
-      {products.length === 0 ? (
-        <p className="text-ink-muted py-16 text-center">No products found.</p>
-      ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {products.map((p) => <ProductCard key={p.id} p={p} currency={currency} />)}
+        <div className="toolbar-right">
+          <span className="result-count">{meta.total} item{meta.total === 1 ? '' : 's'}</span>
         </div>
-      )}
+      </div>
+
+      <section className="section-sm" style={{ paddingTop: 32 }}>
+        {products.length === 0 ? (
+          <div className="empty-state"><I.bag width="56" height="56" /><h4>Nothing here yet</h4><p>Try another category.</p></div>
+        ) : (
+          <div className="product-grid">
+            {products.map((p) => <ProductCard key={p.id} p={p} currency={currency} />)}
+          </div>
+        )}
+      </section>
 
       {meta.pages > 1 && (
-        <div className="flex items-center justify-center gap-3 mt-10">
-          {page > 1 && <Link href={pageHref(page - 1)} className="px-4 py-2 rounded-lg border border-line text-sm">Prev</Link>}
-          <span className="text-sm text-ink-muted">Page {page} of {meta.pages}</span>
-          {page < meta.pages && <Link href={pageHref(page + 1)} className="px-4 py-2 rounded-lg border border-line text-sm">Next</Link>}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, paddingBottom: 60 }}>
+          {page > 1 && <Link href={hrefFor(page - 1)} className="btn btn-outline btn-sm">Prev</Link>}
+          <span className="result-count">Page {page} of {meta.pages}</span>
+          {page < meta.pages && <Link href={hrefFor(page + 1)} className="btn btn-outline btn-sm">Next</Link>}
         </div>
       )}
     </div>
