@@ -11,6 +11,7 @@ interface CartCtx {
   clear: () => void;
   count: number;
   total: number;
+  ready: boolean;
 }
 
 const Ctx = createContext<CartCtx | null>(null);
@@ -40,7 +41,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const count = items.reduce((a, p) => a + p.qty, 0);
   const total = items.reduce((a, p) => a + p.price * p.qty, 0);
 
-  return <Ctx.Provider value={{ items, add, setQty, remove, clear, count, total }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ items, add, setQty, remove, clear, count, total, ready }}>{children}</Ctx.Provider>;
 }
 
 export function useCart() {

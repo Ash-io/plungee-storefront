@@ -9,7 +9,7 @@ import { useStore } from './store-context';
 import { formatPrice } from '@/lib/api';
 
 export function CartDrawer() {
-  const { items, setQty, remove, total, count } = useCart();
+  const { items, setQty, remove, total, count, ready } = useCart();
   const { cartOpen, closeCart } = useUI();
   const { currency } = useStore();
   const router = useRouter();
@@ -29,7 +29,7 @@ export function CartDrawer() {
       <div className={'drawer-scrim' + (cartOpen ? ' open' : '')} onClick={closeCart} />
       <aside className={'drawer' + (cartOpen ? ' open' : '')} aria-hidden={!cartOpen}>
         <div className="drawer-head">
-          <h3>Your Bag {count > 0 && <span style={{ color: 'var(--ink-faint)', fontFamily: 'var(--font-body)', fontSize: 16 }}>({count})</span>}</h3>
+          <h3>Your Bag {ready && count > 0 && <span style={{ color: 'var(--ink-faint)', fontFamily: 'var(--font-body)', fontSize: 16 }}>({count})</span>}</h3>
           <button className="icon-btn" onClick={closeCart} aria-label="Close"><I.close /></button>
         </div>
         <div className="drawer-body">

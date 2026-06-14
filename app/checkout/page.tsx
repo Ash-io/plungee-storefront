@@ -10,7 +10,7 @@ import { api, formatPrice } from '@/lib/api';
 type Form = { first_name: string; last_name: string; email: string; phone: string; address_1: string; city: string; state: string };
 
 export default function CheckoutPage() {
-  const { items, total, clear } = useCart();
+  const { items, total, clear, ready } = useCart();
   const { slug, currency } = useStore();
   const router = useRouter();
   const [form, setForm] = useState<Form>({ first_name: '', last_name: '', email: '', phone: '', address_1: '', city: '', state: '' });
@@ -34,6 +34,10 @@ export default function CheckoutPage() {
       setError(e?.message || 'Something went wrong. Please try again.');
     } finally { setPlacing(false); }
   };
+
+  if (!ready) {
+    return <div className="container"><div className="empty-state"><p style={{ color: 'var(--ink-soft)' }}>Loading checkout…</p></div></div>;
+  }
 
   if (items.length === 0) {
     return <div className="container"><div className="empty-state"><I.bag width="56" height="56" /><h4>Your bag is empty</h4></div></div>;

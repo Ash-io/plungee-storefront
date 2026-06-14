@@ -8,7 +8,7 @@ import { useStore } from './store-context';
 
 export function Header() {
   const { name, logo, announcement } = useStore();
-  const { count } = useCart();
+  const { count, ready } = useCart();
   const { openCart } = useUI();
   const path = usePathname();
   const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
@@ -38,7 +38,7 @@ export function Header() {
           <div className="header-actions">
             <Link href="/products" className="icon-btn" aria-label="Search"><I.search /></Link>
             <button className="icon-btn" onClick={openCart} aria-label="Cart">
-              <I.cart />{count > 0 && <span className="dot">{count}</span>}
+              <I.cart />{ready && count > 0 && <span className="dot">{count}</span>}
             </button>
           </div>
         </div>

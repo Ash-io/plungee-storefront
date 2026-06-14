@@ -7,9 +7,17 @@ import { I } from '@/components/icons';
 import { formatPrice } from '@/lib/api';
 
 export default function CartPage() {
-  const { items, setQty, remove, total } = useCart();
+  const { items, setQty, remove, total, ready } = useCart();
   const { currency } = useStore();
   const shipping = total > 75000 || total === 0 ? 0 : 2500;
+
+  if (!ready) {
+    return (
+      <div className="container"><div className="empty-state" style={{ padding: '90px 20px' }}>
+        <p style={{ color: 'var(--ink-soft)' }}>Loading your bag…</p>
+      </div></div>
+    );
+  }
 
   if (items.length === 0) {
     return (

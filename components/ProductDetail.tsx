@@ -35,7 +35,7 @@ export function ProductDetail({ product, currency }: { product: P; currency: str
           </div>
           {images.length > 1 && (
             <div className="pdp-thumbs">
-              {images.slice(0, 4).map((im, i) => (
+              {images.map((im, i) => (
                 <button key={i} className={'pdp-thumb' + (i === active ? ' active' : '')} onClick={() => setActive(i)} aria-label={`Image ${i + 1}`}>
                   <Media src={im.src} alt={im.alt} seed={`${product.id}-${i}`} sizes="120px" />
                 </button>
