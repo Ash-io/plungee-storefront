@@ -29,8 +29,8 @@ export function Footer() {
             {hasSocial && (
               <div className="footer-social">
                 {social.instagram && <a href={social.instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><I.ig /></a>}
-                {social.tiktok && <a href={social.tiktok} aria-label="TikTok" target="_blank" rel="noreferrer"><I.ig /></a>}
-                {social.x && <a href={social.x} aria-label="X" target="_blank" rel="noreferrer"><I.ig /></a>}
+                {social.tiktok && <a href={social.tiktok} aria-label="TikTok" target="_blank" rel="noreferrer"><I.tiktok /></a>}
+                {social.x && <a href={social.x} aria-label="X" target="_blank" rel="noreferrer"><I.x /></a>}
               </div>
             )}
           </div>

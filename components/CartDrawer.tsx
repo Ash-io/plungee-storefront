@@ -48,7 +48,7 @@ export function CartDrawer() {
               <div>
                 <div className="cart-line-name">{l.name}</div>
                 <div className="cart-qty">
-                  <button onClick={() => setQty(l.id, l.qty - 1)} aria-label="Decrease"><I.minus width="14" height="14" /></button>
+                  <button onClick={() => l.qty === 1 ? remove(l.id) : setQty(l.id, l.qty - 1)} aria-label="Decrease">{l.qty === 1 ? <I.trash width="13" height="13" /> : <I.minus width="14" height="14" />}</button>
                   <span>{l.qty}</span>
                   <button onClick={() => setQty(l.id, l.qty + 1)} aria-label="Increase"><I.plus width="14" height="14" /></button>
                 </div>

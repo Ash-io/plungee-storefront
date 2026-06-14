@@ -9,6 +9,7 @@ import { UIProvider } from '@/components/ui-context';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
+import { MenuDrawer } from '@/components/MenuDrawer';
 import { ToastHost } from '@/components/Toast';
 
 const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600'], variable: '--font-cormorant' });
@@ -56,6 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <main style={{ flex: 1 }}>{children}</main>
                 <Footer />
                 <CartDrawer />
+                <MenuDrawer />
                 <ToastHost />
               </CartProvider>
             </UIProvider>

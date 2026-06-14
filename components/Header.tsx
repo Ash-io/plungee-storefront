@@ -9,7 +9,7 @@ import { useStore } from './store-context';
 export function Header() {
   const { name, logo, announcement } = useStore();
   const { count, ready } = useCart();
-  const { openCart } = useUI();
+  const { openCart, openMenu } = useUI();
   const path = usePathname();
   const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 
@@ -25,7 +25,7 @@ export function Header() {
       )}
       <header className="site-header">
         <div className="container site-header-inner">
-          <Link href="/products" className="icon-btn menu-toggle" aria-label="Menu"><I.menu /></Link>
+          <button className="icon-btn menu-toggle" onClick={openMenu} aria-label="Menu"><I.menu /></button>
           <Link href="/" className="brand">
             {logo ? <img src={logo} alt={name} className="brand-logo" /> : <span className="brand-dot" />}
             {name}
