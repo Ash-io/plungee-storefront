@@ -42,7 +42,9 @@ export function CartDrawer() {
             </div>
           ) : items.map((l) => (
             <div className="cart-line" key={l.id}>
-              <Media src={l.image} alt={l.name} seed={l.id} />
+              <div className="ph">
+                <Media src={l.image} alt={l.name} seed={l.id} />
+              </div>
               <div>
                 <div className="cart-line-name">{l.name}</div>
                 <div className="cart-qty">

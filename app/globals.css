@@ -319,11 +319,11 @@ body {
 .pdp { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(28px, 4vw, 72px);
   padding-block: clamp(28px, 4vw, 48px); align-items: start; }
 .pdp-gallery { display: flex; flex-direction: column; gap: 14px; position: sticky; top: calc(var(--header-h) + 20px); }
-.pdp-main { aspect-ratio: 4/5; border-radius: var(--r-xl); overflow: hidden;
+.pdp-main { position: relative; aspect-ratio: 4/5; border-radius: var(--r-xl); overflow: hidden;
   container-type: inline-size; }
 .pdp-main .ph { position: absolute; inset: 0; }
 .pdp-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.pdp-thumb { aspect-ratio: 1; border-radius: var(--r-md); overflow: hidden; container-type: inline-size;
+.pdp-thumb { position: relative; aspect-ratio: 1; border-radius: var(--r-md); overflow: hidden; container-type: inline-size;
   border: 2px solid transparent; transition: border-color .2s; }
 .pdp-thumb.active { border-color: var(--ink); }
 .pdp-info { padding-top: 8px; }

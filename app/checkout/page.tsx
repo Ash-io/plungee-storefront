@@ -85,7 +85,9 @@ export default function CheckoutPage() {
           <div className="co-step-title" style={{ fontSize: 20 }}>Your order</div>
           {items.map((i) => (
             <div className="co-line" key={i.id}>
-              <Media src={i.image} alt={i.name} seed={i.id} />
+              <div className="ph">
+                <Media src={i.image} alt={i.name} seed={i.id} />
+              </div>
               <div><div className="co-line-name">{i.name}</div><div className="co-line-qty">Qty {i.qty}</div></div>
               <span className="serif-num" style={{ fontWeight: 600 }}>{formatPrice(i.price * i.qty, currency)}</span>
             </div>

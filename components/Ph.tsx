@@ -53,7 +53,7 @@ export function Media({
 }) {
   if (src) {
     return (
-      <div className={'ph-host ' + className} style={{ position: 'absolute', inset: 0 }}>
+      <div className={'ph ph-host ' + className} style={{ position: 'absolute', inset: 0 }}>
         <Image src={src} alt={alt} fill sizes={sizes || '(max-width:768px) 50vw, 25vw'} className="object-cover" style={{ objectFit: 'cover' }} priority={priority} />
       </div>
     );
