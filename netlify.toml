@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Official Next.js runtime — handles SSR, ISR, middleware, and route handlers.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
