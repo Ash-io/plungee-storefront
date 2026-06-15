@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../plungee-new"
+		},
+		{
+			"path": "../Plungee-back"
+		},
+		{
+			"path": "../plungee-image-service"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
