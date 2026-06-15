@@ -2,7 +2,7 @@ import { api } from '@/lib/api';
 import { resolveSlug } from '@/lib/store';
 import { HomePageClient } from '@/components/HomePageClient';
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default async function HomePage() {
   const slug = resolveSlug();

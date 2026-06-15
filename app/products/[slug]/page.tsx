@@ -4,7 +4,7 @@ import { api } from '@/lib/api';
 import { resolveSlug } from '@/lib/store';
 import { ProductDetail } from '@/components/ProductDetail';
 
-export const revalidate = 60;
+export const revalidate = 300;
 const strip = (s: string) => (s || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {

@@ -5,7 +5,7 @@ import { resolveSlug } from '@/lib/store';
 import { ProductCard } from '@/components/ProductCard';
 import { I } from '@/components/icons';
 
-export const revalidate = 60;
+export const revalidate = 300;
 export const metadata: Metadata = { title: 'Shop' };
 
 export default async function CatalogPage({

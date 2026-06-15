@@ -1,7 +1,7 @@
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4300';
 
 // Plungee responses are { status, statusCode, message, data }. Unwrap `data`.
-async function get(path: string, revalidate = 60) {
+async function get(path: string, revalidate = 300) {
   try {
     const res = await fetch(`${BASE}${path}`, { next: { revalidate } });
     if (!res.ok) return null;
